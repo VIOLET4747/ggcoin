@@ -1,1 +1,1 @@
-"# ggcoin" 
+# ggcoin
