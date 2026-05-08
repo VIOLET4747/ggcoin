@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ggcoin - 区块链可视化管理界面</title>
+    <title>ggcoin - 区块链交易系统</title>
     <style>
         * {
             margin: 0;
@@ -11,153 +11,255 @@
             box-sizing: border-box;
         }
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            color: #fff;
+        :root {
+            --primary: #1e3a5f;
+            --primary-light: #2c5282;
+            --secondary: #4a5568;
+            --accent: #3182ce;
+            --success: #38a169;
+            --warning: #dd6b20;
+            --danger: #e53e3e;
+            --bg: #f7fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a202c;
+            --text-light: #718096;
+            --text-muted: #a0aec0;
         }
         
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* 头部 */
         .header {
-            background: rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
             padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .header h1 {
+        .logo {
             font-size: 1.5rem;
-            background: linear-gradient(90deg, #00ff88, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 1.8rem;
         }
         
         .nav-tabs {
             display: flex;
-            gap: 1rem;
+            gap: 0.25rem;
         }
         
         .nav-tabs button {
-            background: none;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
         }
         
-        .nav-tabs button:hover, .nav-tabs button.active {
-            background: linear-gradient(90deg, #00ff88, #00d4ff);
-            border-color: transparent;
-            color: #000;
+        .nav-tabs button:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
         
+        .nav-tabs button.active {
+            background: white;
+            color: var(--primary);
+        }
+        
+        /* 容器 */
         .container {
-            padding: 2rem;
             max-width: 1400px;
             margin: 0 auto;
+            padding: 1.5rem;
         }
         
+        /* 统计卡片 */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
         
         .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border-radius: 10px;
             padding: 1.5rem;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
         }
         
-        .stat-card .number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            background: linear-gradient(90deg, #00ff88, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .stat-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
         }
         
-        .stat-card .label {
-            color: #888;
-            margin-top: 0.5rem;
-        }
-        
-        .section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .section-header {
+        .stat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
         
-        .section-title {
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.2rem;
+        }
+        
+        .stat-icon.blue { background: #ebf8ff; color: var(--accent); }
+        .stat-icon.green { background: #f0fff4; color: var(--success); }
+        .stat-icon.orange { background: #fffaf0; color: var(--warning); }
+        .stat-icon.purple { background: #faf5ff; color: #805ad5; }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .stat-change.up { color: var(--success); }
+        .stat-change.down { color: var(--danger); }
+        
+        /* 卡片 */
+        .card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: #fafafa;
+        }
+        
+        .card-title {
+            font-size: 1rem;
             font-weight: 600;
+            color: var(--text);
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
         }
         
         .btn {
-            background: linear-gradient(90deg, #00ff88, #00d4ff);
-            border: none;
-            color: #000;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
+            border: none;
+            transition: all 0.2s;
         }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2b6cb0;
+        }
+        
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border);
         }
         
         .btn-danger {
-            background: linear-gradient(90deg, #ff4757, #ff6b81);
+            background: var(--danger);
+            color: white;
         }
         
         .btn-danger:hover {
-            box-shadow: 0 4px 20px rgba(255, 71, 87, 0.3);
+            background: #c53030;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
         }
         
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
         
+        /* 卡片内容 */
+        .card-body {
+            padding: 1.25rem;
+        }
+        
+        /* 区块列表 */
         .block-list {
             max-height: 400px;
             overflow-y: auto;
         }
         
         .block-item {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
             padding: 1rem;
-            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.2s;
+        }
+        
+        .block-item:last-child {
+            border-bottom: none;
         }
         
         .block-item:hover {
-            background: rgba(0, 255, 136, 0.1);
-            border-left: 3px solid #00ff88;
+            background: #f7fafc;
         }
         
         .block-header {
@@ -168,88 +270,208 @@
         }
         
         .block-index {
-            font-weight: bold;
-            color: #00ff88;
+            font-weight: 600;
+            color: var(--accent);
         }
         
         .block-hash {
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: #888;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
         
-        .block-details {
+        .block-meta {
             display: flex;
             gap: 1.5rem;
-            font-size: 0.85rem;
-            color: #aaa;
+            font-size: 0.8rem;
+            color: var(--text-light);
         }
         
+        .block-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        /* 表格 */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        
+        .table th, .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: var(--text-light);
+            background: #fafafa;
+        }
+        
+        .table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* 表单 */
         .form-group {
             margin-bottom: 1rem;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: #aaa;
+            margin-bottom: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
         }
         
         .form-group input, .form-group select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
-            font-size: 1rem;
+            padding: 0.625rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: white;
+            color: var(--text);
+            transition: border-color 0.2s;
         }
         
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #00ff88;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        /* 钱包卡片 */
+        .wallet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
         }
         
         .wallet-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            transition: all 0.2s;
+        }
+        
+        .wallet-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         
         .wallet-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
         
         .wallet-name {
-            font-weight: bold;
+            font-weight: 600;
+            color: var(--text);
         }
         
         .wallet-balance {
-            color: #00ff88;
-            font-weight: bold;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
         }
         
         .wallet-address {
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: #888;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
             word-break: break-all;
+            padding: 0.5rem;
+            background: #f7fafc;
+            border-radius: 4px;
         }
         
-        .peer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            background: rgba(0, 0, 0, 0.3);
+        /* 交易表单 */
+        .transaction-form {
+            background: #fafafa;
+            padding: 1.25rem;
             border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        /* 挖矿状态 */
+        .mining-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .mining-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+        
+        .mining-indicator.active {
+            background: var(--success);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .mining-text {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+        
+        /* 待处理交易 */
+        .pending-tx {
+            padding: 0.75rem;
+            background: #fffbeb;
+            border: 1px solid #feebc8;
+            border-radius: 6px;
             margin-bottom: 0.5rem;
         }
         
+        .pending-tx:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tx-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+        
+        .tx-hash {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+        
+        .tx-amount {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        /* 模态框 */
         .modal {
             display: none;
             position: fixed;
@@ -257,57 +479,68 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
         
+        .modal.active {
+            display: flex;
+        }
+        
         .modal-content {
-            background: #1a1a2e;
-            border-radius: 12px;
-            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
             width: 90%;
-            max-width: 500px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
         }
         
         .close-modal {
             cursor: pointer;
-            font-size: 1.5rem;
-            color: #888;
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            padding: 0.25rem;
         }
         
         .close-modal:hover {
-            color: #fff;
+            color: var(--text);
         }
         
+        /* 通知 */
         .notification {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 2rem;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            padding: 1rem 1.5rem;
             border-radius: 8px;
-            color: #fff;
-            font-weight: 600;
+            color: white;
+            font-weight: 500;
             z-index: 1001;
             animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .notification.success {
-            background: linear-gradient(90deg, #00ff88, #00d4ff);
-            color: #000;
+            background: linear-gradient(135deg, var(--success), #2f855a);
         }
         
         .notification.error {
-            background: linear-gradient(90deg, #ff4757, #ff6b81);
+            background: linear-gradient(135deg, var(--danger), #c53030);
         }
         
         @keyframes slideIn {
@@ -321,230 +554,543 @@
             }
         }
         
-        .mining-indicator {
-            display: inline-flex;
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* 标签页内容 */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+        
+        /* 系统管理页面样式 */
+        .action-item {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .action-info h4 {
+            margin: 0 0 0.25rem 0;
+            color: var(--text-primary);
+        }
+        
+        .action-info p {
+            margin: 0;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+        
+        .info-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .log-info {
+            color: #22c55e;
+            font-weight: 500;
+        }
+        
+        .log-error {
+            color: #ef4444;
+            font-weight: 500;
+        }
+        
+        /* 验证页面样式 */
+        .verify-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .verify-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .verify-header h4 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+        
+        .verify-ok {
+            color: #22c55e;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .verify-pending {
+            color: #eab308;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .verify-error {
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .verify-details {
+            display: flex;
+            flex-direction: column;
             gap: 0.5rem;
         }
         
-        .mining-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ff4757;
-            animation: pulse 1s infinite;
+        .verify-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 4px;
         }
         
-        .mining-dot.active {
-            background: #00ff88;
+        .verify-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
         }
         
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
+        .verify-value {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.875rem;
         }
         
-        .pending-tx {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 1rem;
+        .verify-value.mono {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .text-ok {
+            color: #22c55e;
+        }
+        
+        .text-error {
+            color: #ef4444;
+        }
+        
+        .block-verify-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem;
             margin-bottom: 0.5rem;
-            font-family: monospace;
-            font-size: 0.85rem;
         }
         
-        .tx-id {
-            color: #00d4ff;
+        .block-verify-item.block-ok {
+            border-left: 3px solid #22c55e;
+        }
+        
+        .block-verify-item.block-error {
+            border-left: 3px solid #ef4444;
+        }
+        
+        .verify-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .verify-block-checks {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+        }
+        
+        .check-ok {
+            color: #22c55e;
+        }
+        
+        .check-error {
+            color: #ef4444;
+        }
+        
+        .verify-error-detail {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #fef2f2;
+            border-radius: 4px;
+            color: #dc2626;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>ggcoin 🪙</h1>
-        <div class="nav-tabs">
-            <button class="active" onclick="showTab('overview')">区块链概览</button>
-            <button onclick="showTab('wallets')">钱包管理</button>
-            <button onclick="showTab('transactions')">交易管理</button>
-            <button onclick="showTab('mining')">挖矿控制</button>
-            <button onclick="showTab('network')">P2P 网络</button>
+    <!-- 头部 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon"></span>
+                <span>ggcoin</span>
+            </div>
+            <div class="nav-tabs">
+                <button class="active" onclick="showTab('overview')">区块链概览</button>
+                <button onclick="showTab('wallets')">钱包管理</button>
+                <button onclick="showTab('transactions')">交易管理</button>
+                <button onclick="showTab('mining')">挖矿控制</button>
+                <button onclick="showTab('verify')">交易验证</button>
+                <button onclick="showTab('system')">系统管理</button>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <div class="container">
+    <!-- 主内容 -->
+    <main class="container">
         <!-- 概览页面 -->
-        <div id="overview" class="tab-content">
+        <div id="overview" class="tab-content active">
+            <!-- 统计卡片 -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="number" id="chain-length">0</div>
-                    <div class="label">区块高度</div>
+                    <div class="stat-header">
+                        <span class="stat-label">区块高度</span>
+                        <span class="stat-icon blue"></span>
+                    </div>
+                    <div class="stat-value" id="chain-length">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number" id="pending-count">0</div>
-                    <div class="label">待处理交易</div>
+                    <div class="stat-header">
+                        <span class="stat-label">待处理交易</span>
+                        <span class="stat-icon orange"></span>
+                    </div>
+                    <div class="stat-value" id="pending-count">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number" id="peer-count">0</div>
-                    <div class="label">连接节点</div>
+                    <div class="stat-header">
+                        <span class="stat-label">钱包数量</span>
+                        <span class="stat-icon green"></span>
+                    </div>
+                    <div class="stat-value" id="wallet-count">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number" id="total-supply">0</div>
-                    <div class="label">总供应量</div>
+                    <div class="stat-header">
+                        <span class="stat-label">总供应量</span>
+                        <span class="stat-icon purple"></span>
+                    </div>
+                    <div class="stat-value" id="total-supply">0</div>
+                    <div class="stat-change up">+100.00 GGC</div>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">区块链</span>
-                    <button class="btn" onclick="refreshBlockchain()">刷新</button>
+            <!-- 区块列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">区块链</span>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="refreshBlockchain()">刷新</button>
+                    </div>
                 </div>
-                <div class="block-list" id="block-list"></div>
+                <div class="card-body">
+                    <div class="block-list" id="block-list"></div>
+                </div>
             </div>
         </div>
 
         <!-- 钱包页面 -->
-        <div id="wallets" class="tab-content" style="display: none;">
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">钱包列表</span>
-                    <button class="btn" onclick="showCreateWalletModal()">创建钱包</button>
+        <div id="wallets" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">钱包列表</span>
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-sm" onclick="showCreateWalletModal()">+ 创建钱包</button>
+                    </div>
                 </div>
-                <div id="wallet-list"></div>
+                <div class="card-body">
+                    <div class="wallet-grid" id="wallet-list"></div>
+                </div>
             </div>
         </div>
 
         <!-- 交易页面 -->
-        <div id="transactions" class="tab-content" style="display: none;">
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">创建交易</span>
+        <div id="transactions" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">发起交易</span>
                 </div>
-                <div class="form-group">
-                    <label>发送方地址</label>
-                    <select id="tx-from">
-                        <option value="">选择钱包</option>
-                    </select>
+                <div class="card-body">
+                    <form class="transaction-form" onsubmit="event.preventDefault(); createTransaction()">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>发送方</label>
+                                <select id="tx-from">
+                                    <option value="">选择钱包</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>接收方地址</label>
+                                <input type="text" id="tx-to" placeholder="输入接收地址">
+                            </div>
+                            <div class="form-group">
+                                <label>金额 (GGC)</label>
+                                <input type="number" id="tx-amount" placeholder="0.00" step="0.01">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">发送交易</button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label>接收方地址</label>
-                    <input type="text" id="tx-to" placeholder="输入接收地址">
-                </div>
-                <div class="form-group">
-                    <label>金额</label>
-                    <input type="number" id="tx-amount" placeholder="输入金额">
-                </div>
-                <button class="btn" onclick="createTransaction()">发送交易</button>
             </div>
 
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">待处理交易</span>
-                    <button class="btn" onclick="refreshPendingTransactions()">刷新</button>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">待处理交易</span>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="refreshPendingTransactions()">刷新</button>
+                    </div>
                 </div>
-                <div id="pending-transactions"></div>
+                <div class="card-body">
+                    <div id="pending-transactions"></div>
+                </div>
             </div>
         </div>
 
         <!-- 挖矿页面 -->
-        <div id="mining" class="tab-content" style="display: none;">
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">挖矿控制</span>
-                    <div class="mining-indicator">
-                        <div class="mining-dot" id="mining-status"></div>
-                        <span id="mining-text">未挖矿</span>
+        <div id="mining" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">挖矿控制</span>
+                    <div class="mining-status">
+                        <span class="mining-indicator" id="mining-status"></span>
+                        <span class="mining-text" id="mining-text">未挖矿</span>
                     </div>
                 </div>
-                <button class="btn" id="mining-btn" onclick="toggleMining()">开始挖矿</button>
-                <p style="margin-top: 1rem; color: #888;">
-                    挖矿难度: <span id="difficulty">2</span>
-                </p>
+                <div class="card-body">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <button class="btn btn-primary" id="mining-btn" onclick="toggleMining()">开始挖矿</button>
+                        <button class="btn btn-secondary" onclick="mineSingleBlock()">挖一个区块</button>
+                    </div>
+                    
+                    <div class="transaction-form" style="margin-bottom: 1.5rem;">
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 1;">
+                                <label>快速挖矿（同时挖掘多个区块）</label>
+                                <input type="number" id="quick-mine-count" placeholder="输入数量" value="10" min="1" max="100">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 0;" onclick="quickMine()">快速挖矿</button>
+                    </div>
+                    
+                    <div style="color: var(--text-light); font-size: 0.875rem;">
+                        <p><strong>当前难度:</strong> <span id="difficulty">2</span></p>
+                        <p><strong>目标时间:</strong> 10 分钟/区块</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">快速挖矿</span>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">挖矿收益</span>
                 </div>
-                <button class="btn" onclick="mineSingleBlock()">挖一个区块</button>
-                <p style="margin-top: 1rem; color: #888;">挖一个区块并立即添加到链上</p>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>区块高度</th>
+                                <th>挖矿时间</th>
+                                <th>奖励 (GGC)</th>
+                                <th>接收地址</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mining-rewards">
+                            <tr>
+                                <td colspan="4" class="empty-state">暂无挖矿记录</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- 网络页面 -->
-        <div id="network" class="tab-content" style="display: none;">
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">网络状态</span>
+        <!-- 交易验证页面 -->
+        <div id="verify" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">验证交易</span>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="number" id="network-status">已停止</div>
-                        <div class="label">状态</div>
+                <div class="card-body">
+                    <div class="transaction-form">
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 1;">
+                                <label>交易 ID (txid)</label>
+                                <input type="text" id="verify-txid" placeholder="输入交易哈希进行验证">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="verifyTransaction()">验证交易</button>
                     </div>
-                    <div class="stat-card">
-                        <div class="number" id="network-port">0</div>
-                        <div class="label">监听端口</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="network-peers">0</div>
-                        <div class="label">连接节点</div>
-                    </div>
+                    <div id="verify-result" style="display: none; margin-top: 1.5rem;"></div>
                 </div>
-                <button class="btn" id="network-btn" onclick="toggleNetwork()">启动网络</button>
             </div>
 
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">连接节点</span>
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <span class="card-title">验证区块链完整性</span>
                 </div>
-                <div class="form-group">
-                    <label>节点地址</label>
-                    <input type="text" id="peer-host" placeholder="IP 地址">
+                <div class="card-body">
+                    <p style="color: var(--text-light); margin-bottom: 1rem;">检查所有区块的哈希、链式链接和 Merkle 根是否正确，验证区块内交易的数字签名。</p>
+                    <button class="btn btn-primary" onclick="verifyBlockchain()">验证整条链</button>
+                    <div id="blockchain-verify-result" style="display: none; margin-top: 1.5rem;"></div>
                 </div>
-                <div class="form-group">
-                    <label>端口</label>
-                    <input type="number" id="peer-port" placeholder="端口号">
-                </div>
-                <button class="btn" onclick="connectPeer()">连接</button>
-            </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">已连接节点</span>
-                </div>
-                <div id="peer-list"></div>
             </div>
         </div>
-    </div>
 
-    <!-- 创建钱包弹窗 -->
+        <!-- 系统管理页面 -->
+        <div id="system" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">数据库管理</span>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="action-item">
+                            <div class="action-info">
+                                <h4>重置数据库</h4>
+                                <p>清空所有数据，恢复到初始状态。系统将重新创建3个示例钱包。</p>
+                            </div>
+                            <button class="btn btn-danger" onclick="resetDatabase()">重置数据库</button>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-info">
+                                <h4>导出数据</h4>
+                                <p>将当前数据库数据导出为 JSON 文件备份。</p>
+                            </div>
+                            <button class="btn btn-secondary" onclick="exportData()">导出数据</button>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-info">
+                                <h4>查看日志</h4>
+                                <p>查看系统运行日志和操作记录。</p>
+                            </div>
+                            <button class="btn btn-secondary" onclick="viewLogs()">查看日志</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <span class="card-title">系统信息</span>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">系统版本</span>
+                            <span class="info-value">1.0.0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">数据库类型</span>
+                            <span class="info-value">SQLite</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">共识机制</span>
+                            <span class="info-value">Proof of Work</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">区块目标时间</span>
+                            <span class="info-value">10 分钟</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">挖矿奖励</span>
+                            <span class="info-value">50 GGC/区块</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">网络端口</span>
+                            <span class="info-value">5000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 创建钱包模态框 -->
     <div class="modal" id="create-wallet-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>创建新钱包</h2>
+                <span class="modal-title">创建新钱包</span>
                 <span class="close-modal" onclick="closeCreateWalletModal()">&times;</span>
             </div>
             <div class="form-group">
                 <label>钱包名称</label>
                 <input type="text" id="wallet-name" placeholder="输入钱包名称">
             </div>
-            <button class="btn" onclick="createWallet()">创建</button>
+            <button class="btn btn-primary" style="width: 100%;" onclick="createWallet()">创建钱包</button>
         </div>
     </div>
 
     <!-- 通知 -->
-    <div class="notification" id="notification" style="display: none;"></div>
+    <div class="notification" id="notification"></div>
 
     <script>
         function showTab(tab) {
             document.querySelectorAll('.nav-tabs button').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.nav-tabs button[onclick="showTab('${tab}')"]`).classList.add('active');
             
-            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
-            document.getElementById(tab).style.display = 'block';
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
         }
 
         function showNotification(message, type = 'success') {
@@ -562,10 +1108,15 @@
             const response = await fetch('/api/blockchain');
             const data = await response.json();
             
-            document.getElementById('chain-length').textContent = data.length;
+            document.getElementById('chain-length').textContent = data.length || 0;
             
             const blockList = document.getElementById('block-list');
             blockList.innerHTML = '';
+            
+            if (!data.chain || data.chain.length === 0) {
+                blockList.innerHTML = '<div class="empty-state"><span class="empty-state-icon"></span><p>暂无区块</p></div>';
+                return;
+            }
             
             data.chain.reverse().forEach(block => {
                 const blockItem = document.createElement('div');
@@ -575,10 +1126,10 @@
                         <span class="block-index">#${block.index}</span>
                         <span class="block-hash">${block.hash}</span>
                     </div>
-                    <div class="block-details">
-                        <span>交易数: ${block.transaction_count}</span>
+                    <div class="block-meta">
+                        <span>${block.transaction_count} 笔交易</span>
                         <span>Nonce: ${block.nonce}</span>
-                        <span>时间戳: ${new Date(block.timestamp * 1000).toLocaleString()}</span>
+                        <span>${new Date(block.timestamp * 1000).toLocaleString()}</span>
                     </div>
                 `;
                 blockList.appendChild(blockItem);
@@ -589,19 +1140,26 @@
             const response = await fetch('/api/wallets');
             const wallets = await response.json();
             
+            document.getElementById('wallet-count').textContent = wallets.length;
+            
             const walletList = document.getElementById('wallet-list');
             walletList.innerHTML = '';
             
+            // 保存当前选中的值，避免定时刷新时重置用户选择
             const select = document.getElementById('tx-from');
+            const selectedValue = select.value;
             select.innerHTML = '<option value="">选择钱包</option>';
             
+            let totalSupply = 0;
             wallets.forEach(wallet => {
+                totalSupply += wallet.balance;
+                
                 const walletCard = document.createElement('div');
                 walletCard.className = 'wallet-card';
                 walletCard.innerHTML = `
                     <div class="wallet-header">
                         <span class="wallet-name">${wallet.name}</span>
-                        <span class="wallet-balance">${wallet.balance} GGC</span>
+                        <span class="wallet-balance">${wallet.balance.toFixed(2)} GGC</span>
                     </div>
                     <div class="wallet-address">${wallet.address}</div>
                 `;
@@ -609,9 +1167,16 @@
                 
                 const option = document.createElement('option');
                 option.value = wallet.address;
-                option.textContent = `${wallet.name} (${wallet.balance} GGC)`;
+                option.textContent = `${wallet.name} (${wallet.balance.toFixed(2)} GGC)`;
                 select.appendChild(option);
             });
+            
+            // 恢复之前选中的值
+            if (selectedValue) {
+                select.value = selectedValue;
+            }
+            
+            document.getElementById('total-supply').textContent = totalSupply.toFixed(2);
         }
 
         async function refreshPendingTransactions() {
@@ -624,60 +1189,45 @@
             pendingList.innerHTML = '';
             
             if (transactions.length === 0) {
-                pendingList.innerHTML = '<p style="color: #888; text-align: center;">暂无待处理交易</p>';
+                pendingList.innerHTML = '<div class="empty-state"><span class="empty-state-icon"></span><p>暂无待处理交易</p></div>';
                 return;
             }
             
             transactions.forEach(tx => {
                 const txItem = document.createElement('div');
                 txItem.className = 'pending-tx';
-                txItem.innerHTML = `<span class="tx-id">${tx.txid}</span>`;
+                txItem.innerHTML = `
+                    <div class="tx-info">
+                        <span class="tx-hash">${tx.txid}</span>
+                        <span class="tx-amount">+${tx.outputs?.[0]?.value || 0} GGC</span>
+                    </div>
+                `;
                 pendingList.appendChild(txItem);
             });
-        }
-
-        async function refreshNetworkStatus() {
-            const response = await fetch('/api/network');
-            const data = await response.json();
-            
-            document.getElementById('network-status').textContent = data.running ? '运行中' : '已停止';
-            document.getElementById('network-port').textContent = data.port || 0;
-            document.getElementById('network-peers').textContent = data.peer_count || 0;
-            document.getElementById('peer-count').textContent = data.peer_count || 0;
-            
-            const peerList = document.getElementById('peer-list');
-            peerList.innerHTML = '';
-            
-            if (data.peers) {
-                data.peers.forEach(peer => {
-                    const peerItem = document.createElement('div');
-                    peerItem.className = 'peer-item';
-                    peerItem.innerHTML = `
-                        <span>${peer.host}:${peer.port}</span>
-                    `;
-                    peerList.appendChild(peerItem);
-                });
-            }
         }
 
         async function refreshMiningStatus() {
             const response = await fetch('/api/mining_status');
             const data = await response.json();
             
-            const miningDot = document.getElementById('mining-status');
+            const miningIndicator = document.getElementById('mining-status');
             const miningText = document.getElementById('mining-text');
             const miningBtn = document.getElementById('mining-btn');
             
             if (data.is_mining) {
-                miningDot.classList.add('active');
+                miningIndicator.classList.add('active');
                 miningText.textContent = '挖矿中...';
                 miningBtn.textContent = '停止挖矿';
                 miningBtn.className = 'btn btn-danger';
             } else {
-                miningDot.classList.remove('active');
+                miningIndicator.classList.remove('active');
                 miningText.textContent = '未挖矿';
                 miningBtn.textContent = '开始挖矿';
-                miningBtn.className = 'btn';
+                miningBtn.className = 'btn btn-primary';
+            }
+            
+            if (data.difficulty) {
+                document.getElementById('difficulty').textContent = data.difficulty;
             }
         }
 
@@ -686,8 +1236,8 @@
             const to = document.getElementById('tx-to').value;
             const amount = parseFloat(document.getElementById('tx-amount').value);
             
-            if (!from || !to || isNaN(amount)) {
-                showNotification('请填写完整信息', 'error');
+            if (!from || !to || isNaN(amount) || amount <= 0) {
+                showNotification('请填写完整的交易信息', 'error');
                 return;
             }
             
@@ -700,10 +1250,11 @@
             const data = await response.json();
             
             if (data.success) {
-                showNotification(`交易已创建: ${data.txid}`);
+                showNotification('交易已提交，挖矿后余额将自动更新');
                 document.getElementById('tx-to').value = '';
                 document.getElementById('tx-amount').value = '';
                 refreshPendingTransactions();
+                refreshWallets();
             } else {
                 showNotification(data.error, 'error');
             }
@@ -714,90 +1265,338 @@
             const data = await response.json();
             
             if (data.success) {
-                showNotification(`挖到区块 #${data.block.index}: ${data.block.hash}`);
+                showNotification(`挖到区块 #${data.block.index}`);
                 refreshBlockchain();
                 refreshPendingTransactions();
                 refreshWallets();
+                refreshMiningRewards();
             } else {
-                showNotification(data.error, 'error');
+                showNotification(data.error || '挖矿失败', 'error');
+            }
+        }
+
+        async function refreshMiningRewards() {
+            const response = await fetch('/api/mining_rewards');
+            const data = await response.json();
+            
+            if (data.success) {
+                const rewardsTable = document.getElementById('mining-rewards');
+                
+                if (data.rewards.length === 0) {
+                    rewardsTable.innerHTML = '<tr><td colspan="4" class="empty-state">暂无挖矿记录</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                data.rewards.forEach(reward => {
+                    html += `
+                        <tr>
+                            <td>#${reward.block_height}</td>
+                            <td>${new Date(reward.timestamp * 1000).toLocaleString()}</td>
+                            <td>${reward.reward} GGC</td>
+                            <td>${reward.address}</td>
+                        </tr>
+                    `;
+                });
+                rewardsTable.innerHTML = html;
             }
         }
 
         async function toggleMining() {
             const isMining = document.getElementById('mining-status').classList.contains('active');
             
-            if (isMining) {
-                await fetch('/api/stop_mining', { method: 'POST' });
-            } else {
-                await fetch('/api/start_mining', { method: 'POST' });
-            }
+            const endpoint = isMining ? '/api/stop_mining' : '/api/start_mining';
+            await fetch(endpoint, { method: 'POST' });
             
             refreshMiningStatus();
         }
 
-        async function toggleNetwork() {
-            const isRunning = document.getElementById('network-status').textContent === '运行中';
-            const btn = document.getElementById('network-btn');
+        async function quickMine() {
+            const count = parseInt(document.getElementById('quick-mine-count').value);
             
-            if (isRunning) {
-                await fetch('/api/stop_network', { method: 'POST' });
-                btn.textContent = '启动网络';
-                btn.className = 'btn';
-            } else {
-                const response = await fetch('/api/start_network', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ port: 8888 })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    btn.textContent = '停止网络';
-                    btn.className = 'btn btn-danger';
-                }
-            }
-            
-            refreshNetworkStatus();
-        }
-
-        async function connectPeer() {
-            const host = document.getElementById('peer-host').value;
-            const port = parseInt(document.getElementById('peer-port').value);
-            
-            if (!host || isNaN(port)) {
-                showNotification('请填写完整信息', 'error');
+            if (isNaN(count) || count < 1 || count > 100) {
+                showNotification('请输入 1-100 之间的数量', 'error');
                 return;
             }
             
-            const response = await fetch('/api/connect_peer', {
+            showNotification(`正在快速挖矿 ${count} 个区块...`);
+            
+            const response = await fetch('/api/quick_mine', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ host, port })
+                body: JSON.stringify({ count })
             });
             
             const data = await response.json();
             
             if (data.success) {
-                showNotification('连接成功');
-                document.getElementById('peer-host').value = '';
-                document.getElementById('peer-port').value = '';
-                refreshNetworkStatus();
+                showNotification(`快速挖矿完成！共挖掘 ${data.blocks.length} 个区块`);
+                refreshBlockchain();
+                refreshPendingTransactions();
+                refreshWallets();
+                refreshMiningRewards();
             } else {
-                showNotification(data.message, 'error');
+                showNotification(data.error, 'error');
             }
         }
 
+        async function resetDatabase() {
+            if (!confirm('确定要重置数据库吗？所有数据将被清空，此操作不可撤销！')) {
+                return;
+            }
+            
+            showNotification('正在重置数据库...');
+            
+            const response = await fetch('/api/reset_database', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification('数据库重置成功！');
+                // 刷新所有数据
+                refreshBlockchain();
+                refreshPendingTransactions();
+                refreshWallets();
+                refreshMiningStatus();
+            } else {
+                showNotification(data.error, 'error');
+            }
+        }
+
+        async function exportData() {
+            showNotification('正在导出数据...');
+            
+            const response = await fetch('/api/export_data');
+            const data = await response.json();
+            
+            if (data.success) {
+                // 创建下载链接
+                const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ggcoin-backup-${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('数据导出成功！');
+            } else {
+                showNotification(data.error, 'error');
+            }
+        }
+
+        async function verifyTransaction() {
+            const txid = document.getElementById('verify-txid').value.trim();
+            
+            if (!txid) {
+                showNotification('请输入交易 ID', 'error');
+                return;
+            }
+            
+            const response = await fetch('/api/verify_transaction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ txid })
+            });
+            
+            const data = await response.json();
+            const resultDiv = document.getElementById('verify-result');
+            resultDiv.style.display = 'block';
+            
+            if (!data.success) {
+                resultDiv.innerHTML = `<div class="verify-error">${data.error}</div>`;
+                return;
+            }
+            
+            let statusIcon = '';
+            let statusClass = '';
+            if (data.status === '已确认') {
+                statusIcon = '✓';
+                statusClass = 'verify-ok';
+            } else if (data.status === '待处理') {
+                statusIcon = '⏳';
+                statusClass = 'verify-pending';
+            } else {
+                statusIcon = '?';
+                statusClass = 'verify-unknown';
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="verify-card">
+                    <div class="verify-header">
+                        <h4>验证结果</h4>
+                        <span class="${statusClass}">${statusIcon} ${data.status}</span>
+                    </div>
+                    <div class="verify-details">
+                        <div class="verify-row">
+                            <span class="verify-label">交易 ID</span>
+                            <span class="verify-value mono">${data.txid}</span>
+                        </div>
+                        ${data.block_index !== null ? `
+                        <div class="verify-row">
+                            <span class="verify-label">所在区块</span>
+                            <span class="verify-value">#${data.block_index}</span>
+                        </div>` : ''}
+                        <div class="verify-row">
+                            <span class="verify-label">数字签名</span>
+                            <span class="verify-value ${data.signature_valid ? 'text-ok' : 'text-error'}">
+                                ${data.signature_valid ? '✓ 有效' : '✗ 无效'}
+                            </span>
+                        </div>
+                        <div class="verify-row">
+                            <span class="verify-label">交易类型</span>
+                            <span class="verify-value">${data.is_coinbase ? 'Coinbase（挖矿奖励）' : '普通转账'}</span>
+                        </div>
+                        ${!data.is_coinbase ? `
+                        <div class="verify-row">
+                            <span class="verify-label">输入数 / 输出数</span>
+                            <span class="verify-value">${data.inputs_count} / ${data.outputs_count}</span>
+                        </div>
+                        <div class="verify-row">
+                            <span class="verify-label">转账金额</span>
+                            <span class="verify-value">${data.total_output} GGC</span>
+                        </div>
+                        ` : ''}
+                        <div class="verify-row">
+                            <span class="verify-label">接收方</span>
+                            <span class="verify-value mono">${data.receiver}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function verifyBlockchain() {
+            showNotification('正在验证区块链...');
+            
+            const response = await fetch('/api/verify_blockchain', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const data = await response.json();
+            const resultDiv = document.getElementById('blockchain-verify-result');
+            resultDiv.style.display = 'block';
+            
+            if (!data.success) {
+                resultDiv.innerHTML = `<div class="verify-error">验证失败</div>`;
+                return;
+            }
+            
+            let html = `
+                <div class="verify-card">
+                    <div class="verify-header">
+                        <h4>区块链完整性验证</h4>
+                        <span class="${data.chain_intact ? 'verify-ok' : 'verify-error'}">
+                            ${data.chain_intact ? '✓ 链完整' : '✗ 链损坏'}
+                        </span>
+                    </div>
+                    <div class="verify-details">
+                        <div class="verify-row">
+                            <span class="verify-label">总区块数</span>
+                            <span class="verify-value">${data.total_blocks}</span>
+                        </div>
+                        <div class="verify-row">
+                            <span class="verify-label">有效区块</span>
+                            <span class="verify-value text-ok">${data.valid_blocks}</span>
+                        </div>
+                        <div class="verify-row">
+                            <span class="verify-label">无效区块</span>
+                            <span class="verify-value ${data.total_blocks - data.valid_blocks > 0 ? 'text-error' : ''}">
+                                ${data.total_blocks - data.valid_blocks}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <h4 style="margin-bottom: 0.5rem;">各区块验证详情</h4>
+            `;
+            
+            data.details.forEach(block => {
+                const checks = block.checks;
+                html += `
+                    <div class="block-verify-item ${block.valid ? 'block-ok' : 'block-error'}">
+                        <div class="verify-block-header">
+                            <span>区块 #${block.index} ${block.is_genesis ? '(创世区块)' : ''}</span>
+                            <span>${block.valid ? '✓ 有效' : '✗ 无效'}</span>
+                        </div>
+                        <div class="verify-block-checks">
+                            <span class="${checks.hash_match ? 'check-ok' : 'check-error'}">
+                                哈希: ${checks.hash_match ? '✓' : '✗'}
+                            </span>
+                            <span class="${checks.prev_hash_match ? 'check-ok' : 'check-error'}">
+                                链链接: ${checks.prev_hash_match ? '✓' : '✗'}
+                            </span>
+                            <span class="${checks.merkle_root_match ? 'check-ok' : 'check-error'}">
+                                Merkle根: ${checks.merkle_root_match ? '✓' : '✗'}
+                            </span>
+                            <span class="${checks.tx_signatures_valid ? 'check-ok' : 'check-error'}">
+                                签名: ${checks.tx_signatures_valid ? '✓' : '✗'}
+                            </span>
+                        </div>
+                        ${!block.valid ? `<div class="verify-error-detail">${block.hash_error || block.prev_hash_error || block.merkle_error || ''}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            resultDiv.innerHTML = html;
+        }
+
+        function viewLogs() {
+            showNotification('正在加载日志...');
+            // 显示模拟日志
+            const logs = [
+                { time: new Date().toLocaleString(), level: 'INFO', message: '系统启动成功' },
+                { time: new Date().toLocaleString(), level: 'INFO', message: '数据库连接成功' },
+                { time: new Date().toLocaleString(), level: 'INFO', message: '已加载 3 个钱包' },
+                { time: new Date().toLocaleString(), level: 'INFO', message: '创世区块已创建' },
+            ];
+            
+            let logHtml = '<div style="max-height: 300px; overflow-y: auto; padding: 1rem;">';
+            logs.forEach(log => {
+                const levelClass = log.level === 'INFO' ? 'log-info' : 'log-error';
+                logHtml += `
+                    <div style="display: flex; gap: 1rem; padding: 0.5rem; border-bottom: 1px solid #e2e8f0;">
+                        <span style="color: #94a3b8;">${log.time}</span>
+                        <span class="${levelClass}">${log.level}</span>
+                        <span>${log.message}</span>
+                    </div>
+                `;
+            });
+            logHtml += '</div>';
+            
+            // 创建模态框显示日志
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="width: 800px;">
+                    <div class="modal-header">
+                        <span class="modal-title">系统日志</span>
+                        <button class="modal-close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">${logHtml}</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
         function showCreateWalletModal() {
-            document.getElementById('create-wallet-modal').style.display = 'flex';
+            document.getElementById('create-wallet-modal').classList.add('active');
         }
 
         function closeCreateWalletModal() {
-            document.getElementById('create-wallet-modal').style.display = 'none';
+            document.getElementById('create-wallet-modal').classList.remove('active');
             document.getElementById('wallet-name').value = '';
         }
 
         async function createWallet() {
-            const name = document.getElementById('wallet-name').value || `钱包${Date.now()}`;
+            const name = document.getElementById('wallet-name').value || `钱包${document.querySelectorAll('.wallet-card').length + 1}`;
             
             const response = await fetch('/api/create_wallet', {
                 method: 'POST',
@@ -808,30 +1607,29 @@
             const data = await response.json();
             
             if (data.success) {
-                showNotification(`钱包 "${name}" 创建成功`);
+                showNotification(`钱包已创建: ${data.name}`);
                 closeCreateWalletModal();
-                refreshWallets();
+                await refreshWallets();
             } else {
-                showNotification('创建失败', 'error');
+                showNotification(data.error, 'error');
             }
         }
 
         // 定时刷新
         setInterval(() => {
             refreshBlockchain();
+            refreshWallets();
             refreshPendingTransactions();
-            refreshNetworkStatus();
             refreshMiningStatus();
+            refreshMiningRewards();
         }, 2000);
 
         // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            refreshBlockchain();
-            refreshWallets();
-            refreshPendingTransactions();
-            refreshNetworkStatus();
-            refreshMiningStatus();
-        });
+        refreshBlockchain();
+        refreshWallets();
+        refreshPendingTransactions();
+        refreshMiningRewards();
+        refreshMiningStatus();
     </script>
 </body>
 </html>

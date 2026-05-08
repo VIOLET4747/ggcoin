@@ -59,6 +59,8 @@ class Wallet:
         返回:
             私钥的十六进制字符串
         """
+        if isinstance(self.private_key, str):
+            return self.private_key
         return self.private_key.to_string().hex()
     
     def get_public_key_hex(self) -> str:
@@ -68,6 +70,8 @@ class Wallet:
         返回:
             公钥的十六进制字符串
         """
+        if isinstance(self.public_key, str):
+            return self.public_key
         return self.public_key.to_string().hex()
     
     def get_address(self) -> str:
@@ -90,7 +94,16 @@ class Wallet:
             签名的十六进制字符串
         """
         data_bytes = data.encode('utf-8')
-        signature = self.private_key.sign(data_bytes)
+        
+        if isinstance(self.private_key, str):
+            private_key = SigningKey.from_string(
+                bytes.fromhex(self.private_key),
+                curve=SECP256k1
+            )
+        else:
+            private_key = self.private_key
+            
+        signature = private_key.sign(data_bytes)
         return signature.hex()
     
     @classmethod
